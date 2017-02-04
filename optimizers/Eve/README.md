@@ -18,10 +18,3 @@ optimizer = Eve()
 ```
 
 And run ```python train_mnist.py```.
-
-@article{koushik2016improving,
-  title={Improving Stochastic Gradient Descent with Feedback},
-  author={Koushik, Jayanth and Hayashi, Hiroaki},
-  journal={arXiv preprint arXiv:1611.01505},
-  year={2016}
-}
