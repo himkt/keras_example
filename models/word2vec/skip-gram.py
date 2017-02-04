@@ -1,6 +1,7 @@
 import chainer
 import iterator
 import collections
+import argparse
 from chainer.training import extensions
 
 
@@ -38,6 +39,11 @@ class SkipGram(chainer.Chain):
         return loss
 
 
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    '--gpu', dest='gpu_id', action='store', type=int, default=-1)
+args = parser.parse_args()
+
 word2idx = chainer.datasets.get_ptb_words_vocabulary()
 idx2word = {word: idx for idx, word in word2idx.items()}
 
@@ -59,23 +65,19 @@ model = SkipGram(n_vocab, n_units, loss_func)
 optimizer = chainer.optimizers.Adam()
 optimizer.setup(model)
 
-gpu_id = -1
-if gpu_id >= 0:
-    chainer.cuda.get_device(gpu_id).use()
+if args.gpu_id >= 0:
+    chainer.cuda.get_device(args.gpu_id).use()
     chainer.cuda.check_cuda_available()
-    chainer.cuda.get_device(gpu_id).use()
+    chainer.cuda.get_device(args.gpu_id).use()
     model.to_gpu()
 
-
 train_iter = iterator.WindowIterator(train_corpus, n_window, n_batch)
-
 updater = chainer.training.StandardUpdater(
-    train_iter, optimizer, converter=convert, device=gpu_id)
-trainer = chainer.training.Trainer(updater, (20, 'epoch'), out='result')
+    train_iter, optimizer, converter=convert, device=args.gpu_id)
 
+trainer = chainer.training.Trainer(updater, (20, 'epoch'), out='result')
 trainer.extend(extensions.LogReport())
 trainer.extend(extensions.PrintReport(
     ['epoch', 'main/loss', 'validation/main/loss']))
 trainer.extend(extensions.ProgressBar())
-
 trainer.run()
