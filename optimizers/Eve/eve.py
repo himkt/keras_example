@@ -53,9 +53,9 @@ class Eve(optimizer.GradientMethod):
 
             r = abs(new_f - old_f) / min(new_f, old_f)
             # d = self.beta3 * d + (1 - self.beta3) * r
-            # above statement caused low performance
-            # because: loss of significant digits?
+            # 誤差が生じる
             d += (1 - self.beta3) * (r - d)
+
             f[:] = new_f
 
         else:
@@ -65,19 +65,16 @@ class Eve(optimizer.GradientMethod):
         # update
         param.data -= self.lr * m / d * (numpy.sqrt(v) + self.eps)
 
-    """
-    TODO: to implement update_one_gpu, it needs to separate computations
-    of \hat{f_{t-1}} and d_t from update_one_cpu and create _update_d_f
-    """
-    # def update_one_gpu(self, param, state):
-    #     cuda.elementwise(
-    #         'T grad, T lr, T one_minus_beta1, T one_minus_beta2, T eps',
-    #         'T param, T m, T v',
-    #         '''m += one_minus_beta1 * (grad - m);
-    #            v += one_minus_beta2 * (grad * grad - v);
-    #            param -= lr * m / (sqrt(v) + eps);''',
-    #         'adam')(param.grad, self.lr, 1 - self.beta1, 1 - self.beta2,
-    #                 self.eps, param.data, state['m'], state['v'])
+    # TODO
+    def update_one_gpu(self, param, state):
+        cuda.elementwise(
+            'T grad, T lr, T one_minus_beta1, T one_minus_beta2, T eps',
+            'T param, T m, T v',
+            '''m += one_minus_beta1 * (grad - m);
+               v += one_minus_beta2 * (grad * grad - v);
+               param -= lr * m / (sqrt(v) + eps);''',
+            'adam')(param.grad, self.lr, 1 - self.beta1, 1 - self.beta2,
+                    self.eps, param.data, state['m'], state['v'])
 
     def update(self, lossfun=None, *args, **kwds):
         # Overwrites GradientMethod.update in order to get loss values
