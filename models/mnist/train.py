@@ -4,7 +4,11 @@ from keras.utils import np_utils
 from keras.datasets import mnist
 
 import numpy as np
+import matplotlib
 from matplotlib import pyplot
+
+pyplot.style.use('ggplot')
+matplotlib.use('Agg')
 
 
 (X_train, y_train), (X_test, y_test) = mnist.load_data()
@@ -31,7 +35,7 @@ model.add(Flatten())
 model.add(Dense(10, activation='softmax'))
 model.compile(optimizer='adam', loss='categorical_crossentropy')
 
-print(model.summary())
+model.summary()
 model.fit(X_train, y_train,
           batch_size=32,
           nb_epoch=20)
