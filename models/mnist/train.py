@@ -4,12 +4,9 @@ from keras.utils import np_utils
 from keras.datasets import mnist
 
 import numpy as np
-import matplotlib
 from matplotlib import pyplot
 
 pyplot.style.use('ggplot')
-matplotlib.use('Agg')
-
 
 (X_train, y_train), (X_test, y_test) = mnist.load_data()
 
