@@ -40,7 +40,8 @@ if __name__ == '__main__':
     test_y = to_categorical(test_y, nb_classes=nb_class)
 
     model = FastText(nb_vocab, nb_embedding, nb_class)
-    model.compile(optimizer='adam', loss='categorical_crossentropy')
+    model.compile(optimizer='adam', metrics=['accuracy'],
+                  loss='categorical_crossentropy')
     model.summary()
     model.fit(train_X, train_y,
               nb_epoch=10, batch_size=32,
