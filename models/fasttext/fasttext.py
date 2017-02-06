@@ -1,8 +1,9 @@
-from keras.layers import Dense, Embedding
+from keras.layers import Dense
+from keras.layers import Embedding
 from keras.models import Sequential
-from keras import backend as K
 from keras.layers.core import Lambda
 from keras.layers.core import Activation
+from keras import backend as K
 
 
 class FastText(Sequential):
